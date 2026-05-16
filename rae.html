@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAE — Repuestos de Autopartes Eléctricas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --dark: #0f1923;
+  --dark-mid: #1a2633;
+  --dark-card: #1c2b3a;
+  --accent: #c8a84b;
+  --text-light: #e8e8e8;
+  --text-muted: #8a9ab0;
+  --border: rgba(255,255,255,0.07);
+  --green: #27ae60;
+  --red: #e74c3c;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--dark);color:var(--text-light);min-height:100vh;overflow-x:hidden}
+body.modal-open{overflow:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--dark-mid)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 24px;gap:24px}
+.nav-logo{display:flex;flex-direction:column;line-height:1;cursor:pointer;text-decoration:none}
+.nav-logo-text{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2rem;letter-spacing:2px;line-height:1}
+.nav-logo-text .r,.nav-logo-text .a{color:#fff}
+.nav-logo-text .e{color:var(--accent);display:inline-block;transform:scaleX(-1)}
+.nav-subtitle{font-size:0.6rem;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px}
+.nav-links{display:flex;gap:4px;margin-left:32px;flex:1}
+.nav-link{background:none;border:none;color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:0.9rem;cursor:pointer;padding:6px 14px;border-radius:6px;transition:all .2s;letter-spacing:.5px}
+.nav-link:hover,.nav-link.active{color:var(--accent);background:rgba(200,168,75,0.08)}
+.nav-actions{display:flex;gap:8px;margin-left:auto}
+.nav-btn{position:relative;background:var(--dark-mid);border:1px solid var(--border);color:var(--text-light);font-size:1.1rem;width:40px;height:40px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-badge{position:absolute;top:-6px;right:-6px;background:var(--accent);color:var(--dark);font-size:0.65rem;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:0 4px;transition:transform .3s}
+.nav-badge.pop{transform:scale(1.6)}
+.nav-badge[data-count="0"]{display:none}
+
+/* PAGES */
+.page{display:none;padding-top:64px;min-height:100vh}
+.page.active{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ INICIO ═══ */
+.hero{position:relative;min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--dark)}
+.hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80') center/cover no-repeat;opacity:0.15}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;opacity:0.6}
+.hero-gradient{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 50%,rgba(200,168,75,0.06) 0%,transparent 60%)}
+.hero-content{position:relative;text-align:center;max-width:900px;padding:40px 24px}
+.hero-brand{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(5rem,15vw,12rem);line-height:1;letter-spacing:4px;margin-bottom:8px}
+.hero-brand .r,.hero-brand .a{color:#fff}
+.hero-brand .e{color:var(--accent);display:inline-block;transform:scaleX(-1)}
+.hero-subtitle{font-size:clamp(0.85rem,2vw,1.1rem);color:var(--text-muted);letter-spacing:4px;text-transform:uppercase;margin-bottom:32px}
+.hero-desc{font-size:1.1rem;color:var(--text-light);max-width:500px;margin:0 auto 40px;line-height:1.7;opacity:0.85}
+.btn-primary{background:var(--accent);color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:2px;text-transform:uppercase;border:none;padding:14px 36px;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:60px;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.5rem;color:var(--accent)}
+.stat-label{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+
+.categories-section{padding:80px 24px;background:var(--dark-mid)}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2rem;color:var(--text-light);text-align:center;margin-bottom:48px;letter-spacing:1px}
+.section-title span{color:var(--accent)}
+.categories-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1100px;margin:0 auto}
+.cat-card{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;padding:32px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.cat-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(200,168,75,0.05),transparent);opacity:0;transition:opacity .3s}
+.cat-card:hover{border-color:rgba(200,168,75,0.3);transform:translateY(-4px)}
+.cat-card:hover::before{opacity:1}
+.cat-icon{font-size:2.5rem;margin-bottom:16px}
+.cat-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.4rem;color:var(--text-light);margin-bottom:8px}
+.cat-desc{font-size:0.9rem;color:var(--text-muted);line-height:1.6}
+.cat-count{display:inline-block;margin-top:16px;font-size:0.8rem;color:var(--accent);font-weight:600;background:rgba(200,168,75,0.1);padding:4px 10px;border-radius:20px}
+
+.featured-section{padding:80px 24px;background:var(--dark)}
+.featured-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1100px;margin:0 auto}
+.feat-card{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .25s}
+.feat-card:hover{border-color:rgba(200,168,75,0.3);transform:translateY(-4px)}
+.feat-card-img{width:100%;height:200px;position:relative;background:var(--dark-mid)}
+.feat-card-img canvas{width:100%;height:100%;display:block;object-fit:cover}
+.feat-card-body{padding:20px}
+.feat-card-cat{font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.feat-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text-light);margin-bottom:8px}
+.feat-card-code{font-size:0.8rem;color:var(--text-muted)}
+
+/* ═══ PRODUCTOS ═══ */
+.productos-header{background:var(--dark-mid);border-bottom:1px solid var(--border);padding:24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.productos-header h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.8rem;color:var(--text-light);flex:1}
+.btn-pdf{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-size:0.85rem;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif}
+.btn-pdf:hover{border-color:var(--accent);color:var(--accent)}
+
+.search-bar{padding:20px 24px;background:var(--dark);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.search-wrap{position:relative;flex:1;max-width:480px}
+.search-input{width:100%;background:var(--dark-mid);border:1px solid var(--border);border-radius:8px;padding:10px 40px 10px 16px;color:var(--text-light);font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:rgba(200,168,75,0.5)}
+.search-input::placeholder{color:var(--text-muted)}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;display:none;line-height:1}
+.search-clear.visible{display:block}
+
+.tabs{padding:16px 24px;background:var(--dark);border-bottom:1px solid var(--border);display:flex;gap:8px;overflow-x:auto}
+.tab{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:0.85rem;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab:hover{border-color:rgba(200,168,75,0.3);color:var(--text-light)}
+.tab.active{background:var(--accent);border-color:var(--accent);color:var(--dark);font-weight:700}
+
+/* PRODUCT GRID */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:24px;max-width:1400px;margin:0 auto}
+.item-card{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:all .25s;position:relative}
+.item-card:hover{border-color:rgba(200,168,75,0.25);transform:translateY(-3px)}
+.item-card-img{position:relative;background:var(--dark-mid)}
+.item-card-img canvas{width:100%;height:200px;display:block;object-fit:cover}
+.item-fav{position:absolute;top:8px;right:8px;background:rgba(15,25,35,0.8);border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;color:var(--text-muted)}
+.item-fav:hover,.item-fav.active{color:#e74c3c;border-color:rgba(231,76,60,0.4)}
+.item-fav.active{color:#e74c3c}
+.item-thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto;background:rgba(0,0,0,0.2)}
+.item-thumb{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s;flex-shrink:0}
+.item-thumb.active{border-color:var(--accent)}
+.item-thumb canvas{display:block}
+.item-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
+.item-code{font-size:0.75rem;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.item-cat{font-size:0.72rem;color:var(--text-muted)}
+.item-desc{font-size:0.88rem;color:var(--text-light);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1;margin-top:4px}
+.item-actions{display:flex;gap:8px;margin-top:12px}
+.btn-ver{flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:0.82rem;padding:8px;border-radius:6px;cursor:pointer;transition:all .2s}
+.btn-ver:hover{border-color:rgba(200,168,75,0.4);color:var(--accent)}
+.btn-cotizar{flex:1;background:var(--accent);border:none;color:var(--dark);font-family:'Barlow',sans-serif;font-weight:700;font-size:0.82rem;padding:8px;border-radius:6px;cursor:pointer;transition:all .2s}
+.btn-cotizar:hover{filter:brightness(1.1)}
+.btn-cotizar.added{background:var(--green);color:#fff}
+.btn-cotizar:disabled{opacity:0.6;cursor:default}
+
+.no-results{text-align:center;padding:80px 24px;color:var(--text-muted)}
+.no-results-icon{font-size:3rem;margin-bottom:16px}
+
+/* SPINNER */
+.spinner-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;color:var(--text-muted)}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.error-wrap{text-align:center;padding:80px 24px}
+.error-wrap p{color:var(--text-muted);margin-bottom:16px}
+
+/* ═══ MODAL DETALLE ═══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--dark-card);border:1px solid var(--border);border-radius:16px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--dark-mid);border:1px solid var(--border);color:var(--text-muted);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10}
+.modal-close:hover{color:var(--accent);border-color:rgba(200,168,75,0.4)}
+.modal-content{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.modal-gallery{padding:24px;background:var(--dark-mid);border-radius:16px 0 0 16px}
+.modal-main-img{width:100%;border-radius:8px;object-fit:contain;max-height:300px;background:var(--dark)}
+.modal-thumbs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.modal-thumb{width:56px;height:56px;border-radius:6px;object-fit:cover;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
+.modal-thumb.active{border-color:var(--accent)}
+.modal-info{padding:28px}
+.modal-code{font-size:0.8rem;color:var(--accent);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.modal-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.8rem;color:var(--text-light);margin-bottom:16px;line-height:1.2}
+.modal-desc{font-size:0.92rem;color:var(--text-muted);line-height:1.7;margin-bottom:24px}
+.modal-specs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.spec-item{background:var(--dark-mid);border-radius:8px;padding:12px}
+.spec-label{font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.spec-val{font-size:0.9rem;color:var(--text-light);font-weight:600}
+.modal-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-fav-modal{background:transparent;border:1px solid var(--border);color:var(--text-muted);font-size:0.9rem;padding:10px 20px;border-radius:8px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif}
+.btn-fav-modal:hover,.btn-fav-modal.active{border-color:rgba(231,76,60,0.4);color:#e74c3c}
+.btn-cotizar-modal{flex:1;background:var(--accent);border:none;color:var(--dark);font-weight:700;font-size:0.95rem;padding:12px;border-radius:8px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif}
+.btn-cotizar-modal:hover{filter:brightness(1.1)}
+.btn-cotizar-modal.added{background:var(--green);color:#fff}
+
+@media(max-width:640px){
+  .modal-content{grid-template-columns:1fr}
+  .modal-gallery{border-radius:16px 16px 0 0}
+}
+
+/* ═══ CARRITO PANEL ═══ */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1500;display:none}
+.cart-overlay.open{display:block}
+.cart-panel{position:fixed;top:0;right:-420px;width:420px;max-width:100vw;height:100vh;background:var(--dark-card);border-left:1px solid var(--border);z-index:1600;display:flex;flex-direction:column;transition:right .3s cubic-bezier(.4,0,.2,1)}
+.cart-panel.open{right:0}
+.cart-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.cart-header h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;flex:1}
+.cart-close{background:none;border:none;color:var(--text-muted);font-size:1.3rem;cursor:pointer;padding:4px}
+.cart-close:hover{color:var(--accent)}
+.cart-items{flex:1;overflow-y:auto;padding:16px}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
+.cart-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--dark-mid);border-radius:8px;margin-bottom:10px;border:1px solid var(--border)}
+.cart-item-thumb{width:50px;height:50px;border-radius:6px;overflow:hidden;background:var(--dark);flex-shrink:0}
+.cart-item-thumb canvas{width:50px;height:50px;display:block}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-size:0.85rem;color:var(--text-light);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-code{font-size:0.75rem;color:var(--accent)}
+.cart-item-qty{display:flex;align-items:center;gap:6px}
+.qty-btn{background:var(--dark-card);border:1px solid var(--border);color:var(--text-light);width:24px;height:24px;border-radius:4px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.qty-btn:hover{border-color:var(--accent);color:var(--accent)}
+.qty-val{font-size:0.9rem;color:var(--text-light);min-width:20px;text-align:center}
+.cart-item-del{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:1rem;padding:4px;transition:color .2s}
+.cart-item-del:hover{color:var(--red)}
+.cart-footer{padding:20px 24px;border-top:1px solid var(--border)}
+.cart-summary{font-size:0.9rem;color:var(--text-muted);margin-bottom:12px}
+.cart-summary span{color:var(--accent);font-weight:700}
+.btn-cotizar-main{width:100%;background:var(--accent);border:none;color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;padding:14px;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-cotizar-main:hover:not(:disabled){filter:brightness(1.1)}
+.btn-cotizar-main:disabled{opacity:0.4;cursor:default}
+
+/* ═══ MODAL COTIZACIÓN ═══ */
+.modal-cotiz-box{background:var(--dark-card);border:1px solid var(--border);border-radius:16px;max-width:560px;width:100%;padding:32px;position:relative}
+.modal-cotiz-box h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.5rem;margin-bottom:20px}
+.cotiz-list{background:var(--dark-mid);border-radius:8px;padding:12px;margin-bottom:20px;max-height:180px;overflow-y:auto}
+.cotiz-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem}
+.cotiz-item:last-child{border-bottom:none}
+.cotiz-code{color:var(--accent);font-weight:600}
+.cotiz-qty{color:var(--text-muted)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.form-group input,.form-group textarea{width:100%;background:var(--dark-mid);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-light);font-family:'Barlow',sans-serif;font-size:0.9rem;outline:none;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus{border-color:rgba(200,168,75,0.5)}
+.form-group textarea{resize:vertical;min-height:80px}
+.modal-btns{display:flex;gap:10px;margin-top:20px}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow',sans-serif;padding:12px;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-cancel:hover{border-color:rgba(200,168,75,0.3);color:var(--accent)}
+.btn-send{flex:2;background:var(--accent);border:none;color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;padding:12px;border-radius:8px;cursor:pointer;transition:all .2s}
+.btn-send:hover{filter:brightness(1.1)}
+.confirm-screen{text-align:center;padding:20px 0}
+.confirm-icon{font-size:3.5rem;margin-bottom:16px}
+.confirm-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.8rem;color:var(--green);margin-bottom:8px}
+.confirm-msg{color:var(--text-muted);font-size:0.95rem;line-height:1.6}
+
+/* ═══ CONTACTO ═══ */
+.contacto-page{padding:40px 24px;max-width:1000px;margin:0 auto}
+.contacto-page h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:2.5rem;margin-bottom:8px}
+.contacto-page h1 span{color:var(--accent)}
+.contacto-page .sub{color:var(--text-muted);margin-bottom:48px}
+.contacto-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media(max-width:640px){.contacto-grid{grid-template-columns:1fr}}
+.contact-info h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:24px;color:var(--accent)}
+.contact-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:20px}
+.contact-item-icon{font-size:1.3rem;margin-top:2px}
+.contact-item-text strong{display:block;color:var(--text-light);font-size:0.9rem;margin-bottom:2px}
+.contact-item-text span{color:var(--text-muted);font-size:0.85rem}
+.contact-form{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;padding:28px}
+.contact-form h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:24px}
+.btn-submit{background:var(--accent);border:none;color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;padding:12px 32px;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
+.btn-submit:hover{filter:brightness(1.1)}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark-card);border:1px solid var(--border);color:var(--text-light);padding:12px 24px;border-radius:8px;font-size:0.9rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" onclick="showPage('inicio')">
+    <div class="nav-logo-text"><span class="r">R</span><span class="a">A</span><span class="e">E</span></div>
+    <div class="nav-subtitle">Repuestos de Autopartes Eléctricas</div>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showPage('inicio')">Inicio</button>
+    <button class="nav-link" onclick="showPage('productos')">Productos</button>
+    <button class="nav-link" onclick="showPage('contacto')">Contacto</button>
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn" id="fav-btn" onclick="filterTab('favs')" title="Favoritos">
+      ♥
+      <span class="nav-badge" id="fav-badge" data-count="0">0</span>
+    </button>
+    <button class="nav-btn" id="cart-btn" onclick="openCart()" title="Cotización">
+      🛒
+      <span class="nav-badge" id="cart-badge" data-count="0">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ INICIO ═══ -->
+<div class="page active" id="page-inicio">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-gradient"></div>
+    <div class="hero-content">
+      <div class="hero-brand"><span class="r">R</span><span class="a">A</span><span class="e">E</span></div>
+      <div class="hero-subtitle">Repuestos de Autopartes Eléctricas</div>
+      <p class="hero-desc">Distribuidores especializados en conectores, ramales y componentes eléctricos para el sector automotriz y agrícola.</p>
+      <button class="btn-primary" onclick="showPage('productos')">Ver catálogo</button>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">3</div>
+          <div class="stat-label">Categorías</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num" id="hero-count">—</div>
+          <div class="stat-label">Productos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Calidad</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="categories-section">
+    <h2 class="section-title">Nuestras <span>Categorías</span></h2>
+    <div class="categories-grid">
+      <div class="cat-card" onclick="filterTab('Conectores')">
+        <div class="cat-icon">🔌</div>
+        <div class="cat-name">Conectores</div>
+        <div class="cat-desc">Conectores eléctricos de alta calidad para todo tipo de vehículos.</div>
+        <span class="cat-count" id="count-con">Cargando...</span>
+      </div>
+      <div class="cat-card" onclick="filterTab('Ramales de conexión')">
+        <div class="cat-icon">🔧</div>
+        <div class="cat-name">Ramales de Conexión</div>
+        <div class="cat-desc">Arneses y ramales para instalaciones eléctricas completas.</div>
+        <span class="cat-count" id="count-ram">Cargando...</span>
+      </div>
+      <div class="cat-card" onclick="filterTab('Línea Agro')">
+        <div class="cat-icon">🌾</div>
+        <div class="cat-name">Línea Agro</div>
+        <div class="cat-desc">Componentes eléctricos especializados para maquinaria agrícola.</div>
+        <span class="cat-count" id="count-agro">Cargando...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="featured-section">
+    <h2 class="section-title">Productos <span>Destacados</span></h2>
+    <div class="featured-grid" id="featured-grid">
+      <div class="spinner-wrap"><div class="spinner"></div><span>Cargando...</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PRODUCTOS ═══ -->
+<div class="page" id="page-productos">
+  <div class="productos-header">
+    <h1>Catálogo de Productos</h1>
+    <button class="btn-pdf" onclick="generatePDF(false)">📄 PDF Completo</button>
+    <button class="btn-pdf" onclick="generatePDF(true)">📄 PDF con filtros</button>
+  </div>
+  <div class="search-bar">
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="text" placeholder="Buscar por código o descripción…" oninput="onSearch(this.value)">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" onclick="filterTab('todos')" data-tab="todos">Todos</button>
+    <button class="tab" onclick="filterTab('Conectores')" data-tab="Conectores">Conectores</button>
+    <button class="tab" onclick="filterTab('Ramales de conexión')" data-tab="Ramales de conexión">Ramales de conexión</button>
+    <button class="tab" onclick="filterTab('Línea Agro')" data-tab="Línea Agro">Línea Agro</button>
+    <button class="tab" onclick="filterTab('favs')" data-tab="favs">♥ Favoritos</button>
+  </div>
+  <div id="products-container">
+    <div class="spinner-wrap"><div class="spinner"></div><span>Cargando productos...</span></div>
+  </div>
+</div>
+
+<!-- ═══ CONTACTO ═══ -->
+<div class="page" id="page-contacto">
+  <div class="contacto-page">
+    <h1>Contacto <span>RAE</span></h1>
+    <p class="sub">Estamos listos para responder tu consulta</p>
+    <div class="contacto-grid">
+      <div class="contact-info">
+        <h3>Información de Contacto</h3>
+        <div class="contact-item">
+          <div class="contact-item-icon">📧</div>
+          <div class="contact-item-text">
+            <strong>Email</strong>
+            <span>info@raerepuestos.com.ar</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">📞</div>
+          <div class="contact-item-text">
+            <strong>Teléfono</strong>
+            <span>+54 11 0000-0000</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-item-icon">📍</div>
+          <div class="contact-item-text">
+            <strong>Ubicación</strong>
+            <span>Buenos Aires, Argentina</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>Envianos un mensaje</h3>
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" placeholder="Tu nombre completo">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" placeholder="tu@email.com">
+        </div>
+        <div class="form-group">
+          <label>Consulta</label>
+          <textarea placeholder="Describí tu consulta…"></textarea>
+        </div>
+        <button class="btn-submit" onclick="submitContact()">Enviar mensaje</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box" id="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-content" id="modal-content"></div>
+  </div>
+</div>
+
+<!-- CARRITO OVERLAY + PANEL -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <h3>🛒 Cotización</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-summary" id="cart-summary">0 productos</div>
+    <button class="btn-cotizar-main" id="btn-cotizar-main" onclick="openCotizModal()" disabled>📋 Solicitar Cotización</button>
+  </div>
+</div>
+
+<!-- MODAL COTIZACIÓN -->
+<div class="modal-overlay" id="cotiz-overlay" onclick="closeCotizOnOverlay(event)">
+  <div class="modal-cotiz-box" id="cotiz-box">
+    <div id="cotiz-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// DATA & STATE
+// ═══════════════════════════════════════
+const SHEET_ID = '1QuaWFg_gwqvvsUdy_rdq6uCK8QMlOzszoHPe0fujhH0';
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=productos`;
+
+let PRODUCTS = [];
+let currentTab = 'todos';
+let searchQuery = '';
+let FAVS = JSON.parse(localStorage.getItem('rae_favs') || '[]');
+let CART = []; // {id, name, code, img, qty}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const idx = ['inicio','productos','contacto'].indexOf(name);
+  document.querySelectorAll('.nav-link')[idx]?.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════
+// LOAD DATA
+// ═══════════════════════════════════════
+async function loadProducts() {
+  try {
+    const res = await fetch(SHEET_URL);
+    const text = await res.text();
+    const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/);
+    if (!match) throw new Error('Parse error');
+    const json = JSON.parse(match[1]);
+    const rows = json.table.rows;
+
+    PRODUCTS = rows.map(row => {
+      const c = row.c;
+      const get = (i) => (c[i] && c[i].v != null) ? String(c[i].v).trim() : '';
+      const imgs = [9,10,11,12,13].map(i => get(i)).filter(Boolean);
+      return {
+        id: get(0),
+        descripcion: get(1),
+        categoria: get(2),
+        subcategoria: get(3),
+        imgs,
+        activo: get(14)
+      };
+    }).filter(p => p.activo !== 'FALSE' && p.id);
+
+    updateCounts();
+    renderProducts();
+    renderFeatured();
+    document.getElementById('hero-count').textContent = PRODUCTS.length;
+  } catch(e) {
+    showError();
+  }
+}
+
+function updateCounts() {
+  const con = PRODUCTS.filter(p => p.categoria === 'Conectores').length;
+  const ram = PRODUCTS.filter(p => p.categoria === 'Ramales de conexión').length;
+  const agro = PRODUCTS.filter(p => p.categoria === 'Línea Agro').length;
+  document.getElementById('count-con').textContent = `${con} productos`;
+  document.getElementById('count-ram').textContent = `${ram} productos`;
+  document.getElementById('count-agro').textContent = `${agro} productos`;
+}
+
+function showError() {
+  document.getElementById('products-container').innerHTML = `
+    <div class="error-wrap">
+      <p>No se pudieron cargar los productos.</p>
+      <button class="btn-primary" onclick="loadProducts()">Reintentar</button>
+    </div>`;
+  document.getElementById('featured-grid').innerHTML = `<p style="color:var(--text-muted);text-align:center">No disponible</p>`;
+  document.getElementById('hero-count').textContent = '—';
+  ['count-con','count-ram','count-agro'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+// ═══════════════════════════════════════
+// WATERMARK CANVAS
+// ═══════════════════════════════════════
+function drawWithWatermark(canvas, imgUrl, small = false) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+
+  if (!imgUrl) {
+    ctx.fillStyle = '#1a2633';
+    ctx.fillRect(0,0,w,h);
+    ctx.font = `${small ? 20 : 32}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('📦', w/2, h/2);
+    return;
+  }
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    ctx.clearRect(0,0,w,h);
+    ctx.fillStyle = '#1a2633';
+    ctx.fillRect(0,0,w,h);
+
+    // Draw image centered/fitted
+    const ratio = Math.min(w/img.width, h/img.height);
+    const dw = img.width * ratio, dh = img.height * ratio;
+    const dx = (w-dw)/2, dy = (h-dh)/2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+
+    // Watermark
+    ctx.save();
+    ctx.translate(w/2, h/2);
+    ctx.rotate(-30 * Math.PI/180);
+    ctx.font = `bold ${small ? 9 : 18}px 'Barlow Condensed', sans-serif`;
+    ctx.fillStyle = 'rgba(200,168,75,0.35)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const step = small ? 40 : 90;
+    for (let y = -h; y < h; y += step) {
+      for (let x = -w; x < w; x += step) {
+        ctx.fillText('RAE REPUESTOS', x, y);
+      }
+    }
+    ctx.restore();
+  };
+  img.onerror = () => {
+    ctx.fillStyle = '#1a2633';
+    ctx.fillRect(0,0,w,h);
+    ctx.font = `${small ? 20 : 32}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('📦', w/2, h/2);
+  };
+  img.src = imgUrl;
+}
+
+// ═══════════════════════════════════════
+// NORMALIZE (búsqueda sin acentos)
+// ═══════════════════════════════════════
+function norm(s) {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+}
+
+// ═══════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════
+function getFiltered() {
+  let list = PRODUCTS;
+  if (currentTab === 'favs') {
+    list = list.filter(p => FAVS.includes(p.id));
+  } else if (currentTab !== 'todos') {
+    list = list.filter(p => p.categoria === currentTab);
+  }
+  if (searchQuery) {
+    const q = norm(searchQuery);
+    list = list.filter(p => norm(p.id).includes(q) || norm(p.descripcion).includes(q));
+  }
+  return list;
+}
+
+// ═══════════════════════════════════════
+// RENDER PRODUCTS
+// ═══════════════════════════════════════
+function renderProducts() {
+  const filtered = getFiltered();
+  const container = document.getElementById('products-container');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <p>Sin resultados para tu búsqueda.</p>
+      </div>`;
+    return;
+  }
+
+  const grid = document.createElement('div');
+  grid.className = 'products-grid';
+
+  filtered.forEach(prod => {
+    const card = buildItemCard(prod);
+    grid.appendChild(card);
+  });
+
+  container.innerHTML = '';
+  container.appendChild(grid);
+}
+
+function buildItemCard(prod) {
+  const isFav = FAVS.includes(prod.id);
+  const inCart = CART.some(c => c.id === prod.id);
+  const mainImg = prod.imgs[0] || '';
+
+  const card = document.createElement('div');
+  card.className = 'item-card';
+  card.dataset.id = prod.id;
+
+  // Main canvas
+  const mainCanvas = document.createElement('canvas');
+  mainCanvas.width = 400; mainCanvas.height = 200;
+  mainCanvas.style.cssText = 'width:100%;height:200px;display:block;object-fit:cover';
+
+  // Fav btn
+  const favBtn = document.createElement('button');
+  favBtn.className = 'item-fav' + (isFav ? ' active' : '');
+  favBtn.innerHTML = isFav ? '♥' : '♡';
+  favBtn.title = 'Favorito';
+  favBtn.onclick = (e) => { e.stopPropagation(); toggleFav(prod.id, favBtn); };
+
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'item-card-img';
+  imgWrap.appendChild(mainCanvas);
+  imgWrap.appendChild(favBtn);
+
+  // Thumbs
+  const thumbsWrap = document.createElement('div');
+  thumbsWrap.className = 'item-thumbs';
+  thumbsWrap.style.display = prod.imgs.length > 1 ? '' : 'none';
+
+  prod.imgs.slice(0,5).forEach((url, idx) => {
+    const tc = document.createElement('canvas');
+    tc.width = 48; tc.height = 48;
+    const tw = document.createElement('div');
+    tw.className = 'item-thumb' + (idx === 0 ? ' active' : '');
+    tw.style.width = '48px'; tw.style.height = '48px';
+    tw.appendChild(tc);
+    tw.onclick = () => {
+      drawWithWatermark(mainCanvas, url, false);
+      thumbsWrap.querySelectorAll('.item-thumb').forEach(t => t.classList.remove('active'));
+      tw.classList.add('active');
+    };
+    drawWithWatermark(tc, url, true);
+    thumbsWrap.appendChild(tw);
+  });
+
+  // Body
+  const body = document.createElement('div');
+  body.className = 'item-body';
+  body.innerHTML = `
+    <div class="item-code">${escHtml(prod.id)}</div>
+    <div class="item-cat">${escHtml(prod.categoria)}${prod.subcategoria ? ' · ' + escHtml(prod.subcategoria) : ''}</div>
+    <div class="item-desc">${escHtml(prod.descripcion)}</div>
+    <div class="item-actions">
+      <button class="btn-ver">Ver más</button>
+      <button class="btn-cotizar ${inCart ? 'added' : ''}" ${inCart ? 'disabled' : ''}>${inCart ? '✓ Agregado' : '+ Cotizar'}</button>
+    </div>`;
+
+  body.querySelector('.btn-ver').onclick = () => openModal(prod);
+  body.querySelector('.btn-cotizar').onclick = (e) => {
+    if (!inCart) addToCart(prod, e.currentTarget);
+  };
+
+  card.appendChild(imgWrap);
+  card.appendChild(thumbsWrap);
+  card.appendChild(body);
+
+  drawWithWatermark(mainCanvas, mainImg, false);
+  return card;
+}
+
+// ═══════════════════════════════════════
+// FEATURED
+// ═══════════════════════════════════════
+function renderFeatured() {
+  const cats = ['Conectores','Ramales de conexión','Línea Agro'];
+  const grid = document.getElementById('featured-grid');
+  grid.innerHTML = '';
+
+  cats.forEach(cat => {
+    const prod = PRODUCTS.find(p => p.categoria === cat && p.imgs.length > 0);
+    if (!prod) return;
+
+    const card = document.createElement('div');
+    card.className = 'feat-card';
+    card.onclick = () => { openModal(prod); };
+
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'feat-card-img';
+    const canvas = document.createElement('canvas');
+    canvas.width = 400; canvas.height = 200;
+    canvas.style.cssText = 'width:100%;height:200px;display:block';
+    imgWrap.appendChild(canvas);
+
+    card.innerHTML = `
+      <div class="feat-card-body">
+        <div class="feat-card-cat">${escHtml(cat)}</div>
+        <div class="feat-card-name">${escHtml(prod.descripcion.substring(0,60))}${prod.descripcion.length>60?'…':''}</div>
+        <div class="feat-card-code">${escHtml(prod.id)}</div>
+      </div>`;
+    card.insertBefore(imgWrap, card.firstChild);
+
+    drawWithWatermark(canvas, prod.imgs[0], false);
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════
+// SEARCH & TABS
+// ═══════════════════════════════════════
+function onSearch(val) {
+  searchQuery = val;
+  document.getElementById('search-clear').classList.toggle('visible', val.length > 0);
+  renderProducts();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  onSearch('');
+}
+
+function filterTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.querySelector(`.tab[data-tab="${tab}"]`);
+  if (activeTab) activeTab.classList.add('active');
+  showPage('productos');
+  renderProducts();
+}
+
+// ═══════════════════════════════════════
+// FAVORITES
+// ═══════════════════════════════════════
+function toggleFav(id, btn) {
+  const idx = FAVS.indexOf(id);
+  if (idx === -1) {
+    FAVS.push(id);
+    if (btn) { btn.innerHTML = '♥'; btn.classList.add('active'); }
+    showToast('Agregado a favoritos');
+  } else {
+    FAVS.splice(idx, 1);
+    if (btn) { btn.innerHTML = '♡'; btn.classList.remove('active'); }
+    showToast('Eliminado de favoritos');
+    if (currentTab === 'favs') renderProducts();
+  }
+  localStorage.setItem('rae_favs', JSON.stringify(FAVS));
+  updateFavBadge();
+  // Update modal fav btn if open
+  const mfb = document.getElementById('modal-fav-btn');
+  if (mfb && mfb.dataset.id === id) {
+    mfb.classList.toggle('active', FAVS.includes(id));
+    mfb.textContent = FAVS.includes(id) ? '♥ Favorito' : '♡ Favorito';
+  }
+}
+
+function updateFavBadge() {
+  const badge = document.getElementById('fav-badge');
+  badge.textContent = FAVS.length;
+  badge.dataset.count = FAVS.length;
+  if (FAVS.length > 0) badge.style.display = '';
+  else badge.style.display = 'none';
+}
+
+// ═══════════════════════════════════════
+// CART
+// ═══════════════════════════════════════
+function addToCart(prod, btnEl) {
+  if (CART.some(c => c.id === prod.id)) return;
+  CART.push({ id: prod.id, name: prod.descripcion, code: prod.id, img: prod.imgs[0]||'', qty: 1 });
+  if (btnEl) { btnEl.textContent = '✓ Agregado'; btnEl.classList.add('added'); btnEl.disabled = true; }
+  updateCartBadge();
+  renderCartItems();
+  showToast('Agregado a cotización');
+}
+
+function removeFromCart(id) {
+  CART = CART.filter(c => c.id !== id);
+  updateCartBadge();
+  renderCartItems();
+  updateCartButtons();
+}
+
+function changeQty(id, delta) {
+  const item = CART.find(c => c.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, item.qty + delta);
+  renderCartItems();
+}
+
+function updateCartBadge() {
+  const total = CART.reduce((s,c) => s+c.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  badge.textContent = total;
+  badge.dataset.count = total;
+  if (total > 0) { badge.style.display = ''; badge.classList.add('pop'); setTimeout(() => badge.classList.remove('pop'), 400); }
+  else badge.style.display = 'none';
+  document.getElementById('btn-cotizar-main').disabled = CART.length === 0;
+  document.getElementById('cart-summary').innerHTML = CART.length === 0
+    ? '0 productos'
+    : `<span>${CART.length}</span> ${CART.length===1?'producto':'productos'} seleccionados`;
+}
+
+function updateCartButtons() {
+  // Sync all "cotizar" buttons in grid
+  document.querySelectorAll('.btn-cotizar').forEach(btn => {
+    const card = btn.closest('.item-card');
+    if (!card) return;
+    const id = card.dataset.id;
+    const inCart = CART.some(c => c.id === id);
+    btn.textContent = inCart ? '✓ Agregado' : '+ Cotizar';
+    btn.classList.toggle('added', inCart);
+    btn.disabled = inCart;
+  });
+  // Modal cotizar btn
+  const mb = document.getElementById('modal-cotizar-btn');
+  if (mb) {
+    const id = mb.dataset.id;
+    const inCart = CART.some(c => c.id === id);
+    mb.textContent = inCart ? '✓ Agregado al carrito' : '+ Agregar a cotización';
+    mb.classList.toggle('added', inCart);
+    mb.disabled = inCart;
+  }
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cart-items');
+  if (CART.length === 0) {
+    container.innerHTML = '<div class="cart-empty">Tu cotización está vacía</div>';
+    return;
+  }
+  container.innerHTML = '';
+  CART.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'cart-item';
+    const thumbDiv = document.createElement('div');
+    thumbDiv.className = 'cart-item-thumb';
+    const tc = document.createElement('canvas');
+    tc.width = 50; tc.height = 50;
+    thumbDiv.appendChild(tc);
+    drawWithWatermark(tc, item.img, true);
+
+    el.innerHTML = `
+      <div class="cart-item-info">
+        <div class="cart-item-name">${escHtml(item.name)}</div>
+        <div class="cart-item-code">${escHtml(item.code)}</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="changeQty('${escAttr(item.id)}',-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${escAttr(item.id)}',1)">+</button>
+        </div>
+      </div>
+      <button class="cart-item-del" onclick="removeFromCart('${escAttr(item.id)}')">🗑</button>`;
+    el.insertBefore(thumbDiv, el.firstChild);
+    container.appendChild(el);
+  });
+}
+
+function openCart() {
+  document.getElementById('cart-overlay').classList.add('open');
+  document.getElementById('cart-panel').classList.add('open');
+  document.body.classList.add('modal-open');
+  renderCartItems();
+}
+function closeCart() {
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.getElementById('cart-panel').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+// ═══════════════════════════════════════
+// COTIZ MODAL
+// ═══════════════════════════════════════
+function openCotizModal() {
+  closeCart();
+  const overlay = document.getElementById('cotiz-overlay');
+  const content = document.getElementById('cotiz-content');
+  overlay.classList.add('open');
+  document.body.classList.add('modal-open');
+
+  const listHtml = CART.map(item => `
+    <div class="cotiz-item">
+      <span><span class="cotiz-code">${escHtml(item.code)}</span> — ${escHtml(item.name.substring(0,50))}${item.name.length>50?'…':''}</span>
+      <span class="cotiz-qty">x${item.qty}</span>
+    </div>`).join('');
+
+  content.innerHTML = `
+    <h2>📋 Solicitar Cotización</h2>
+    <div class="cotiz-list">${listHtml}</div>
+    <div class="form-group"><label>Nombre</label><input type="text" id="cot-nombre" placeholder="Tu nombre"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="cot-email" placeholder="tu@email.com"></div>
+    <div class="form-group"><label>Teléfono</label><input type="tel" id="cot-tel" placeholder="+54 11 0000-0000"></div>
+    <div class="form-group"><label>Notas adicionales</label><textarea id="cot-notas" placeholder="Cualquier detalle…"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeCotizModal()">Cancelar</button>
+      <button class="btn-send" onclick="sendCotiz()">Enviar solicitud</button>
+    </div>`;
+}
+
+function closeCotizModal() {
+  document.getElementById('cotiz-overlay').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+function closeCotizOnOverlay(e) {
+  if (e.target === document.getElementById('cotiz-overlay')) closeCotizModal();
+}
+
+function sendCotiz() {
+  const nombre = document.getElementById('cot-nombre')?.value.trim();
+  const email = document.getElementById('cot-email')?.value.trim();
+  if (!nombre || !email) { showToast('Completá nombre y email'); return; }
+  CART = [];
+  updateCartBadge();
+  updateCartButtons();
+  document.getElementById('cotiz-content').innerHTML = `
+    <div class="confirm-screen">
+      <div class="confirm-icon">✅</div>
+      <div class="confirm-title">¡Solicitud enviada!</div>
+      <p class="confirm-msg">Recibimos tu pedido de cotización.<br>Te contactaremos pronto a <strong>${escHtml(email)}</strong>.</p>
+      <button class="btn-primary" style="margin-top:24px" onclick="closeCotizModal()">Cerrar</button>
+    </div>`;
+}
+
+// ═══════════════════════════════════════
+// MODAL DETALLE
+// ═══════════════════════════════════════
+function openModal(prod) {
+  const overlay = document.getElementById('modal-overlay');
+  const content = document.getElementById('modal-content');
+  overlay.classList.add('open');
+  document.body.classList.add('modal-open');
+
+  const inCart = CART.some(c => c.id === prod.id);
+  const isFav = FAVS.includes(prod.id);
+  const mainImgSrc = prod.imgs[0] || '';
+
+  content.innerHTML = `
+    <div class="modal-gallery">
+      <img class="modal-main-img" id="modal-main-img" src="${escAttr(mainImgSrc)}" alt="${escAttr(prod.descripcion)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%231a2633%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22>📦</text></svg>'">
+      <div class="modal-thumbs" id="modal-thumbs">${
+        prod.imgs.slice(0,5).map((url, i) => `
+          <img class="modal-thumb ${i===0?'active':''}" src="${escAttr(url)}" onclick="switchModalImg('${escAttr(url)}',this)" onerror="this.style.display='none'">`
+        ).join('')
+      }</div>
+    </div>
+    <div class="modal-info">
+      <div class="modal-code">${escHtml(prod.id)}</div>
+      <div class="modal-name">${escHtml(prod.descripcion)}</div>
+      <div class="modal-desc">${escHtml(prod.descripcion)}</div>
+      <div class="modal-specs">
+        <div class="spec-item"><div class="spec-label">Código</div><div class="spec-val">${escHtml(prod.id)}</div></div>
+        <div class="spec-item"><div class="spec-label">Categoría</div><div class="spec-val">${escHtml(prod.categoria)}</div></div>
+        ${prod.subcategoria ? `<div class="spec-item"><div class="spec-label">Subcategoría</div><div class="spec-val">${escHtml(prod.subcategoria)}</div></div>` : ''}
+      </div>
+      <div class="modal-actions">
+        <button class="btn-fav-modal ${isFav?'active':''}" id="modal-fav-btn" data-id="${escAttr(prod.id)}" onclick="toggleFav('${escAttr(prod.id)}',null);this.classList.toggle('active',FAVS.includes('${escAttr(prod.id)}'));this.textContent=FAVS.includes('${escAttr(prod.id)}')?'♥ Favorito':'♡ Favorito'">${isFav?'♥ Favorito':'♡ Favorito'}</button>
+        <button class="btn-cotizar-modal ${inCart?'added':''}" id="modal-cotizar-btn" data-id="${escAttr(prod.id)}" onclick="addToCartFromModal('${escAttr(prod.id)}')" ${inCart?'disabled':''}>${inCart?'✓ Agregado al carrito':'+ Agregar a cotización'}</button>
+      </div>
+    </div>`;
+}
+
+function switchModalImg(url, thumbEl) {
+  document.getElementById('modal-main-img').src = url;
+  document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+  thumbEl.classList.add('active');
+}
+
+function addToCartFromModal(id) {
+  const prod = PRODUCTS.find(p => p.id === id);
+  if (!prod) return;
+  addToCart(prod, null);
+  const btn = document.getElementById('modal-cotizar-btn');
+  if (btn) { btn.textContent = '✓ Agregado al carrito'; btn.classList.add('added'); btn.disabled = true; }
+  updateCartButtons();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+// ═══════════════════════════════════════
+// PDF GENERATION
+// ═══════════════════════════════════════
+function generatePDF(filtered) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const list = filtered ? getFiltered() : PRODUCTS;
+  const fileName = filtered ? 'RAE_catalogo_filtrado.pdf' : 'RAE_catalogo_completo.pdf';
+
+  const pageW = 210, pageH = 297;
+  const margin = 14;
+  const colW = pageW - margin*2;
+  let y = 0;
+  let pageNum = 1;
+
+  function hexToRgb(hex) {
+    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+    return [r,g,b];
+  }
+
+  function addHeader() {
+    doc.setFillColor(...hexToRgb('#0f1923'));
+    doc.rect(0, 0, pageW, 28, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(20);
+    doc.setTextColor(...hexToRgb('#c8a84b'));
+    doc.text('RAE REPUESTOS', margin, 12);
+    doc.setFontSize(8);
+    doc.setTextColor(...hexToRgb('#8a9ab0'));
+    doc.text('Repuestos de Autopartes Eléctricas', margin, 18);
+    const title = filtered ? 'Catálogo filtrado' : 'Catálogo completo';
+    doc.setFontSize(9);
+    doc.text(`${title} — ${new Date().toLocaleDateString('es-AR')}`, margin, 23);
+    y = 34;
+  }
+
+  function addFooter() {
+    doc.setFillColor(...hexToRgb('#0f1923'));
+    doc.rect(0, pageH-18, pageW, 18, 'F');
+    doc.setFontSize(7);
+    doc.setTextColor(...hexToRgb('#8a9ab0'));
+    doc.text('info@raerepuestos.com.ar  |  +54 11 0000-0000  |  Buenos Aires, Argentina', margin, pageH-8);
+    doc.text(`Pág. ${pageNum}`, pageW-margin, pageH-8, {align:'right'});
+  }
+
+  function checkPage(needed) {
+    if (y + needed > pageH - 22) {
+      addFooter();
+      doc.addPage();
+      pageNum++;
+      addHeader();
+    }
+  }
+
+  addHeader();
+
+  // Group by category
+  const cats = [...new Set(list.map(p => p.categoria))];
+  cats.forEach(cat => {
+    const catProds = list.filter(p => p.categoria === cat);
+    checkPage(14);
+
+    // Category header
+    doc.setFillColor(...hexToRgb('#1a2633'));
+    doc.rect(margin, y, colW, 10, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(10);
+    doc.setTextColor(...hexToRgb('#c8a84b'));
+    doc.text(cat.toUpperCase(), margin+4, y+7);
+    y += 14;
+
+    catProds.forEach(prod => {
+      checkPage(18);
+
+      // Product rect
+      doc.setFillColor(...hexToRgb('#1c2b3a'));
+      doc.roundedRect(margin, y, colW, 14, 2, 2, 'F');
+
+      // Code badge
+      doc.setFillColor(...hexToRgb('#c8a84b'));
+      doc.roundedRect(margin+2, y+2, 30, 10, 1.5, 1.5, 'F');
+      doc.setFont('helvetica','bold');
+      doc.setFontSize(7);
+      doc.setTextColor(...hexToRgb('#0f1923'));
+      doc.text(prod.id, margin+4, y+8.5);
+
+      // Description
+      const desc = prod.descripcion.length > 70 ? prod.descripcion.substring(0,70)+'…' : prod.descripcion;
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...hexToRgb('#e8e8e8'));
+      doc.text(desc, margin+36, y+6.5);
+
+      if (prod.subcategoria) {
+        doc.setFontSize(7);
+        doc.setTextColor(...hexToRgb('#8a9ab0'));
+        doc.text(prod.subcategoria, margin+36, y+11);
+      }
+
+      y += 16;
+    });
+    y += 4;
+  });
+
+  addFooter();
+  doc.save(fileName);
+}
+
+// ═══════════════════════════════════════
+// CONTACT
+// ═══════════════════════════════════════
+function submitContact() {
+  showToast('¡Mensaje enviado! Te contactaremos pronto.');
+}
+
+// ═══════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════
+// HTML ESCAPE
+// ═══════════════════════════════════════
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escAttr(s) {
+  return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+updateFavBadge();
+updateCartBadge();
+loadProducts();
+</script>
+</body>
+</html>
