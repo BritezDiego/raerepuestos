@@ -259,9 +259,18 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" onclick="showPage('inicio')">
-    <div class="nav-logo-text"><span class="r">R</span><span class="a">A</span><span class="e">E</span></div>
-    <div class="nav-subtitle">Repuestos de Autopartes Eléctricas</div>
+  <a class="nav-logo" onclick="showPage('inicio')" style="line-height:0;display:flex;align-items:center">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 165 95" height="44" aria-label="RAE Repuestos" style="display:block">
+      <polygon points="5,10 108,10 111,2 8,2" fill="#c8a84b"/>
+      <polygon points="115,10 125,10 128,2 118,2" fill="#c8a84b"/>
+      <polygon points="130,10 140,10 143,2 133,2" fill="#c8a84b"/>
+      <polygon points="145,10 155,10 158,2 148,2" fill="#c8a84b"/>
+      <text font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="900" font-style="italic">
+        <tspan x="4" y="90" font-size="68" fill="#ffffff">R</tspan>
+        <tspan x="50" y="90" font-size="68" fill="#ffffff">A</tspan>
+        <tspan x="96" y="90" font-size="78" fill="#c8a84b">E</tspan>
+      </text>
+    </svg>
   </a>
   <div class="nav-links">
     <button class="nav-link active" onclick="showPage('inicio')">Inicio</button>
@@ -287,8 +296,27 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
     <div class="hero-grid"></div>
     <div class="hero-gradient"></div>
     <div class="hero-content">
-      <div class="hero-brand"><span class="r">R</span><span class="a">A</span><span class="e">E</span></div>
-      <div class="hero-subtitle">Repuestos de Autopartes Eléctricas</div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 215" style="width:min(100%,620px);display:block;margin:0 auto 32px" aria-label="RAE Repuestos de Autopartes Eléctricas">
+        <!-- Racing stripes -->
+        <polygon points="18,25 362,25 369,5 25,5" fill="#c8a84b"/>
+        <polygon points="374,25 410,25 417,5 381,5" fill="#c8a84b"/>
+        <polygon points="422,25 458,25 465,5 429,5" fill="#c8a84b"/>
+        <polygon points="470,25 506,25 513,5 477,5" fill="#c8a84b"/>
+        <!-- RAE letters -->
+        <text font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="900" font-style="italic">
+          <tspan x="15" y="190" font-size="140" fill="#ffffff">R</tspan>
+          <tspan x="104" y="190" font-size="140" fill="#ffffff">A</tspan>
+          <tspan x="193" y="190" font-size="162" fill="#c8a84b">E</tspan>
+        </text>
+        <!-- Subtitle flanking left bars -->
+        <polygon points="6,210 24,210 27,204 9,204" fill="#c8a84b"/>
+        <polygon points="29,210 47,210 50,204 32,204" fill="#c8a84b"/>
+        <!-- Subtitle text -->
+        <text x="280" y="210" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-weight="700" font-size="16" fill="#c8a84b" letter-spacing="3">REPUESTOS DE AUTOPARTES ELÉCTRICAS</text>
+        <!-- Subtitle flanking right bars -->
+        <polygon points="513,210 531,210 534,204 516,204" fill="#c8a84b"/>
+        <polygon points="536,210 554,210 557,204 539,204" fill="#c8a84b"/>
+      </svg>
       <p class="hero-desc">Distribuidores especializados en conectores, ramales y componentes eléctricos para el sector automotriz y agrícola.</p>
       <button class="btn-primary" onclick="showPage('productos')">Ver catálogo</button>
       <div class="hero-stats">
