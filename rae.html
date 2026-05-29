@@ -87,7 +87,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .feat-card{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .25s}
 .feat-card:hover{border-color:rgba(200,168,75,0.3);transform:translateY(-4px)}
 .feat-card-img{width:100%;height:200px;position:relative;background:var(--dark-mid)}
-.feat-card-img canvas{width:100%;height:100%;display:block;object-fit:cover}
 .feat-card-body{padding:20px}
 .feat-card-cat{font-size:0.75rem;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .feat-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.1rem;color:var(--text-light);margin-bottom:8px}
@@ -116,15 +115,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:24px;max-width:1400px;margin:0 auto}
 .item-card{background:var(--dark-card);border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:all .25s;position:relative}
 .item-card:hover{border-color:rgba(200,168,75,0.25);transform:translateY(-3px)}
-.item-card-img{position:relative;background:var(--dark-mid)}
-.item-card-img canvas{width:100%;height:200px;display:block;object-fit:cover}
+.item-card-img{position:relative;background:var(--dark-mid);height:200px}
 .item-fav{position:absolute;top:8px;right:8px;background:rgba(15,25,35,0.8);border:1px solid var(--border);border-radius:6px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;color:var(--text-muted)}
 .item-fav:hover,.item-fav.active{color:#e74c3c;border-color:rgba(231,76,60,0.4)}
 .item-fav.active{color:#e74c3c}
 .item-thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto;background:rgba(0,0,0,0.2)}
 .item-thumb{border-radius:4px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:border-color .2s;flex-shrink:0}
 .item-thumb.active{border-color:var(--accent)}
-.item-thumb canvas{display:block}
+
 .item-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
 .item-code{font-size:0.75rem;color:var(--accent);font-weight:700;letter-spacing:1px;text-transform:uppercase}
 .item-cat{font-size:0.72rem;color:var(--text-muted)}
@@ -193,7 +191,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .cart-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
 .cart-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--dark-mid);border-radius:8px;margin-bottom:10px;border:1px solid var(--border)}
 .cart-item-thumb{width:50px;height:50px;border-radius:6px;overflow:hidden;background:var(--dark);flex-shrink:0}
-.cart-item-thumb canvas{width:50px;height:50px;display:block}
 .cart-item-info{flex:1;min-width:0}
 .cart-item-name{font-size:0.85rem;color:var(--text-light);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cart-item-code{font-size:0.75rem;color:var(--accent)}
@@ -249,6 +246,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .contact-form h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1.3rem;margin-bottom:24px}
 .btn-submit{background:var(--accent);border:none;color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:1px;padding:12px 32px;border-radius:8px;cursor:pointer;transition:all .2s;width:100%}
 .btn-submit:hover{filter:brightness(1.1)}
+
+/* ═══ WATERMARK ═══ */
+.img-watermark-wrap{position:relative;width:100%;height:100%;overflow:hidden}
+.img-watermark-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.watermark-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.2em;color:rgba(200,168,75,0.4);transform:rotate(-30deg);pointer-events:none;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,0.3);user-select:none}
+.item-img-wrap .watermark-text,.detail-main-img .watermark-text{font-size:1.1rem;text-shadow:0 0 40px rgba(200,168,75,0.15),0 40px 0 rgba(200,168,75,0.4),0 -40px 0 rgba(200,168,75,0.4),80px 20px 0 rgba(200,168,75,0.4),-80px -20px 0 rgba(200,168,75,0.4)}
+.thumb .watermark-text,.detail-thumb .watermark-text{font-size:0.5rem;letter-spacing:0.1em}
 
 /* ═══ TOAST ═══ */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark-card);border:1px solid var(--border);color:var(--text-light);padding:12px 24px;border-radius:8px;font-size:0.9rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
@@ -556,63 +560,6 @@ function showError() {
 }
 
 // ═══════════════════════════════════════
-// WATERMARK CANVAS
-// ═══════════════════════════════════════
-function drawWithWatermark(canvas, imgUrl, small = false) {
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-
-  if (!imgUrl) {
-    ctx.fillStyle = '#1a2633';
-    ctx.fillRect(0,0,w,h);
-    ctx.font = `${small ? 20 : 32}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('📦', w/2, h/2);
-    return;
-  }
-
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
-    ctx.clearRect(0,0,w,h);
-    ctx.fillStyle = '#1a2633';
-    ctx.fillRect(0,0,w,h);
-
-    // Draw image centered/fitted
-    const ratio = Math.min(w/img.width, h/img.height);
-    const dw = img.width * ratio, dh = img.height * ratio;
-    const dx = (w-dw)/2, dy = (h-dh)/2;
-    ctx.drawImage(img, dx, dy, dw, dh);
-
-    // Watermark
-    ctx.save();
-    ctx.translate(w/2, h/2);
-    ctx.rotate(-30 * Math.PI/180);
-    ctx.font = `bold ${small ? 9 : 18}px 'Barlow Condensed', sans-serif`;
-    ctx.fillStyle = 'rgba(200,168,75,0.35)';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const step = small ? 40 : 90;
-    for (let y = -h; y < h; y += step) {
-      for (let x = -w; x < w; x += step) {
-        ctx.fillText('RAE REPUESTOS', x, y);
-      }
-    }
-    ctx.restore();
-  };
-  img.onerror = () => {
-    ctx.fillStyle = '#1a2633';
-    ctx.fillRect(0,0,w,h);
-    ctx.font = `${small ? 20 : 32}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('📦', w/2, h/2);
-  };
-  img.src = imgUrl;
-}
-
-// ═══════════════════════════════════════
 // NORMALIZE (búsqueda sin acentos)
 // ═══════════════════════════════════════
 function norm(s) {
@@ -673,10 +620,19 @@ function buildItemCard(prod) {
   card.className = 'item-card';
   card.dataset.id = prod.id;
 
-  // Main canvas
-  const mainCanvas = document.createElement('canvas');
-  mainCanvas.width = 400; mainCanvas.height = 200;
-  mainCanvas.style.cssText = 'width:100%;height:200px;display:block;object-fit:cover';
+  // Main image with watermark
+  const mainWrap = document.createElement('div');
+  mainWrap.className = 'img-watermark-wrap item-img-wrap';
+  const mainImgEl = document.createElement('img');
+  mainImgEl.src = mainImg;
+  mainImgEl.alt = '';
+  mainImgEl.loading = 'lazy';
+  mainImgEl.onerror = function() { this.src = ''; };
+  const mainWatermark = document.createElement('div');
+  mainWatermark.className = 'watermark-text';
+  mainWatermark.textContent = 'RAE REPUESTOS';
+  mainWrap.appendChild(mainImgEl);
+  mainWrap.appendChild(mainWatermark);
 
   // Fav btn
   const favBtn = document.createElement('button');
@@ -687,7 +643,7 @@ function buildItemCard(prod) {
 
   const imgWrap = document.createElement('div');
   imgWrap.className = 'item-card-img';
-  imgWrap.appendChild(mainCanvas);
+  imgWrap.appendChild(mainWrap);
   imgWrap.appendChild(favBtn);
 
   // Thumbs
@@ -696,18 +652,27 @@ function buildItemCard(prod) {
   thumbsWrap.style.display = prod.imgs.length > 1 ? '' : 'none';
 
   prod.imgs.slice(0,5).forEach((url, idx) => {
-    const tc = document.createElement('canvas');
-    tc.width = 48; tc.height = 48;
     const tw = document.createElement('div');
     tw.className = 'item-thumb' + (idx === 0 ? ' active' : '');
     tw.style.width = '48px'; tw.style.height = '48px';
-    tw.appendChild(tc);
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'img-watermark-wrap thumb';
+    const thumbImg = document.createElement('img');
+    thumbImg.src = url;
+    thumbImg.alt = '';
+    thumbImg.loading = 'lazy';
+    thumbImg.onerror = function() { this.src = ''; };
+    const thumbWatermark = document.createElement('div');
+    thumbWatermark.className = 'watermark-text';
+    thumbWatermark.textContent = 'RAE REPUESTOS';
+    thumbWrap.appendChild(thumbImg);
+    thumbWrap.appendChild(thumbWatermark);
+    tw.appendChild(thumbWrap);
     tw.onclick = () => {
-      drawWithWatermark(mainCanvas, url, false);
+      mainImgEl.src = url;
       thumbsWrap.querySelectorAll('.item-thumb').forEach(t => t.classList.remove('active'));
       tw.classList.add('active');
     };
-    drawWithWatermark(tc, url, true);
     thumbsWrap.appendChild(tw);
   });
 
@@ -732,7 +697,6 @@ function buildItemCard(prod) {
   card.appendChild(thumbsWrap);
   card.appendChild(body);
 
-  drawWithWatermark(mainCanvas, mainImg, false);
   return card;
 }
 
@@ -754,10 +718,19 @@ function renderFeatured() {
 
     const imgWrap = document.createElement('div');
     imgWrap.className = 'feat-card-img';
-    const canvas = document.createElement('canvas');
-    canvas.width = 400; canvas.height = 200;
-    canvas.style.cssText = 'width:100%;height:200px;display:block';
-    imgWrap.appendChild(canvas);
+    const wrap = document.createElement('div');
+    wrap.className = 'img-watermark-wrap item-img-wrap';
+    const featImg = document.createElement('img');
+    featImg.src = prod.imgs[0];
+    featImg.alt = '';
+    featImg.loading = 'lazy';
+    featImg.onerror = function() { this.src = ''; };
+    const featWatermark = document.createElement('div');
+    featWatermark.className = 'watermark-text';
+    featWatermark.textContent = 'RAE REPUESTOS';
+    wrap.appendChild(featImg);
+    wrap.appendChild(featWatermark);
+    imgWrap.appendChild(wrap);
 
     card.innerHTML = `
       <div class="feat-card-body">
@@ -767,7 +740,6 @@ function renderFeatured() {
       </div>`;
     card.insertBefore(imgWrap, card.firstChild);
 
-    drawWithWatermark(canvas, prod.imgs[0], false);
     grid.appendChild(card);
   });
 }
@@ -901,10 +873,7 @@ function renderCartItems() {
     el.className = 'cart-item';
     const thumbDiv = document.createElement('div');
     thumbDiv.className = 'cart-item-thumb';
-    const tc = document.createElement('canvas');
-    tc.width = 50; tc.height = 50;
-    thumbDiv.appendChild(tc);
-    drawWithWatermark(tc, item.img, true);
+    thumbDiv.innerHTML = `<img src="${escAttr(item.img)}" alt="" onerror="this.style.display='none'" style="width:50px;height:50px;object-fit:cover;display:block">`;
 
     el.innerHTML = `
       <div class="cart-item-info">
