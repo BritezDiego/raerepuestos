@@ -253,6 +253,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .watermark-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.2em;color:rgba(200,168,75,0.4);transform:rotate(-30deg);pointer-events:none;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,0.3);user-select:none}
 .item-img-wrap .watermark-text,.detail-main-img .watermark-text{font-size:1.1rem;text-shadow:0 0 40px rgba(200,168,75,0.15),0 40px 0 rgba(200,168,75,0.4),0 -40px 0 rgba(200,168,75,0.4),80px 20px 0 rgba(200,168,75,0.4),-80px -20px 0 rgba(200,168,75,0.4)}
 .thumb .watermark-text,.detail-thumb .watermark-text{font-size:0.5rem;letter-spacing:0.1em}
+.detail-main-img{height:auto}
+.detail-main-img img{height:auto;object-fit:contain}
 
 /* ═══ TOAST ═══ */
 .toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dark-card);border:1px solid var(--border);color:var(--text-light);padding:12px 24px;border-radius:8px;font-size:0.9rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
