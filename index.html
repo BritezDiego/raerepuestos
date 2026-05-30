@@ -518,7 +518,11 @@ async function loadProducts() {
     PRODUCTS = rows.map(row => {
       const c = row.c;
       const get = (i) => (c[i] && c[i].v != null) ? String(c[i].v).trim() : '';
-      const imgs = [9,10,11,12,13].map(i => get(i)).filter(Boolean);
+      const toImgUrl = u => {
+        const m = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+        return m ? `https://drive.google.com/uc?export=view&id=${m[1]}` : u;
+      };
+      const imgs = [0,1,2,3,4].map(i => get(9+i) || get(4+i)).filter(Boolean).map(toImgUrl);
       return {
         id: get(0),
         descripcion: get(1),
