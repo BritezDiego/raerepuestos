@@ -157,6 +157,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .modal-content{display:grid;grid-template-columns:1fr 1fr;gap:0}
 .modal-gallery{padding:24px;background:var(--dark-mid);border-radius:16px 0 0 16px}
 .modal-main-img{width:100%;border-radius:8px;object-fit:contain;max-height:300px;background:var(--dark)}
+.img-watermark-wrap{position:relative;width:100%;overflow:hidden}
+.img-watermark-wrap img{width:100%;display:block}
+.watermark-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:0.2em;color:rgba(200,168,75,0.4);transform:rotate(-30deg);pointer-events:none;white-space:nowrap;text-shadow:0 0 40px rgba(200,168,75,0.15),0 40px 0 rgba(200,168,75,0.4),0 -40px 0 rgba(200,168,75,0.4),80px 20px 0 rgba(200,168,75,0.4),-80px -20px 0 rgba(200,168,75,0.4);user-select:none}
 .modal-thumbs{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
 .modal-thumb{width:56px;height:56px;border-radius:6px;object-fit:cover;cursor:pointer;border:2px solid transparent;transition:border-color .2s}
 .modal-thumb.active{border-color:var(--accent)}
@@ -1002,7 +1005,10 @@ function openModal(prod) {
 
   content.innerHTML = `
     <div class="modal-gallery">
-      <img class="modal-main-img" id="modal-main-img" src="${escAttr(mainImgSrc)}" alt="${escAttr(prod.descripcion)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%231a2633%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22>📦</text></svg>'">
+      <div class="img-watermark-wrap">
+        <img class="modal-main-img" id="modal-main-img" src="${escAttr(mainImgSrc)}" alt="${escAttr(prod.descripcion)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%231a2633%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22>📦</text></svg>'">
+        <div class="watermark-text">RAE REPUESTOS</div>
+      </div>
       <div class="modal-thumbs" id="modal-thumbs">${
         prod.imgs.slice(0,5).map((url, i) => `
           <img class="modal-thumb ${i===0?'active':''}" src="${escAttr(url)}" onclick="switchModalImg('${escAttr(url)}',this)" onerror="this.style.display='none'">`
