@@ -971,10 +971,16 @@ function openModal(prod) {
 
   content.innerHTML = `
     <div class="modal-gallery">
-      <img class="modal-main-img" id="modal-main-img" src="${escAttr(mainImgSrc)}" alt="${escAttr(prod.descripcion)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%231a2633%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22>📦</text></svg>'">
+      <div class="img-watermark-wrap detail-main-img">
+        <img class="modal-main-img" id="modal-main-img" src="${escAttr(mainImgSrc)}" alt="${escAttr(prod.descripcion)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22200%22><rect fill=%22%231a2633%22 width=%22200%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2240%22>📦</text></svg>'">
+        <div class="watermark-text">RAE REPUESTOS</div>
+      </div>
       <div class="modal-thumbs" id="modal-thumbs">${
         prod.imgs.slice(0,5).map((url, i) => `
-          <img class="modal-thumb ${i===0?'active':''}" src="${escAttr(url)}" onclick="switchModalImg('${escAttr(url)}',this)" onerror="this.style.display='none'">`
+          <div class="img-watermark-wrap detail-thumb" style="width:56px;height:56px">
+            <img class="modal-thumb ${i===0?'active':''}" src="${escAttr(url)}" onclick="switchModalImg('${escAttr(url)}',this)" onerror="this.parentElement.style.display='none'">
+            <div class="watermark-text">RAE REPUESTOS</div>
+          </div>`
         ).join('')
       }</div>
     </div>
