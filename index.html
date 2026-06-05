@@ -52,11 +52,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
 /* ═══ INICIO ═══ */
-.hero{position:relative;min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--dark)}
+.hero{position:relative;min-height:clamp(420px,65vh,680px);display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--dark)}
 .hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&q=80') center/cover no-repeat;opacity:0.15}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;opacity:0.6}
 .hero-gradient{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 50%,rgba(200,168,75,0.06) 0%,transparent 60%)}
-.hero-content{position:relative;text-align:center;max-width:900px;padding:40px 24px}
+.hero-content{position:relative;text-align:center;max-width:900px;padding:24px 24px}
 .hero-brand{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(5rem,15vw,12rem);line-height:1;letter-spacing:4px;margin-bottom:8px}
 .hero-brand .r,.hero-brand .a{color:#fff}
 .hero-brand .e{color:var(--accent);display:inline-block;transform:scaleX(-1)}
@@ -64,7 +64,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .hero-desc{font-size:1.1rem;color:var(--text-light);max-width:500px;margin:0 auto 40px;line-height:1.7;opacity:0.85}
 .btn-primary{background:var(--accent);color:var(--dark);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:1rem;letter-spacing:2px;text-transform:uppercase;border:none;padding:14px 36px;border-radius:8px;cursor:pointer;transition:all .2s}
 .btn-primary:hover{filter:brightness(1.1);transform:translateY(-2px)}
-.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:60px;flex-wrap:wrap}
+.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:32px;flex-wrap:wrap}
 .stat-item{text-align:center}
 .stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:2.5rem;color:var(--accent)}
 .stat-label{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
