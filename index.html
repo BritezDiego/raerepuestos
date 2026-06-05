@@ -380,14 +380,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
           <div class="contact-item-icon">📧</div>
           <div class="contact-item-text">
             <strong>Email</strong>
-            <span>info@raerepuestos.com.ar</span>
+            <span>rae.repuestos@gmail.com</span>
           </div>
         </div>
         <div class="contact-item">
           <div class="contact-item-icon">📞</div>
           <div class="contact-item-text">
             <strong>Teléfono</strong>
-            <span>+54 11 0000-0000</span>
+            <span>+54 11 3002-7245</span>
           </div>
         </div>
         <div class="contact-item">
@@ -963,7 +963,7 @@ function openCotizModal() {
     <div class="cotiz-list">${listHtml}</div>
     <div class="form-group"><label>Nombre</label><input type="text" id="cot-nombre" placeholder="Tu nombre"></div>
     <div class="form-group"><label>Email</label><input type="email" id="cot-email" placeholder="tu@email.com"></div>
-    <div class="form-group"><label>Teléfono</label><input type="tel" id="cot-tel" placeholder="+54 11 0000-0000"></div>
+    <div class="form-group"><label>Teléfono</label><input type="tel" id="cot-tel" placeholder="+54 11 3002-7245"></div>
     <div class="form-group"><label>Notas adicionales</label><textarea id="cot-notas" placeholder="Cualquier detalle…"></textarea></div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeCotizModal()">Cancelar</button>
@@ -1126,7 +1126,7 @@ async function generatePDF(filtered) {
     doc.rect(0, pageH-18, pageW, 18, 'F');
     doc.setFontSize(7);
     doc.setTextColor(...hexToRgb('#8a9ab0'));
-    doc.text('info@raerepuestos.com.ar  |  +54 11 0000-0000  |  Buenos Aires, Argentina', margin, pageH-8);
+    doc.text('rae.repuestos@gmail.com  |  +54 11 3002-7245  |  Buenos Aires, Argentina', margin, pageH-8);
     doc.text(`Pág. ${pageNum}`, pageW-margin, pageH-8, {align:'right'});
   }
 
