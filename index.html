@@ -111,6 +111,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
 .tab{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:0.85rem;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap}
 .tab:hover{border-color:rgba(200,168,75,0.3);color:var(--text-light)}
 .tab.active{background:var(--accent);border-color:var(--accent);color:var(--dark);font-weight:700}
+.subtabs{padding:8px 24px;background:var(--dark);border-bottom:1px solid var(--border);display:flex;gap:8px;overflow-x:auto;flex-wrap:wrap}
+.subtabs:empty,.subtabs.hidden{display:none}
+.subtab{background:none;border:1px solid rgba(200,168,75,0.25);color:var(--text-muted);font-family:'Barlow',sans-serif;font-size:0.8rem;padding:4px 14px;border-radius:20px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.subtab:hover{border-color:rgba(200,168,75,0.5);color:var(--text-light)}
+.subtab.active{background:rgba(200,168,75,0.15);border-color:var(--accent);color:var(--accent);font-weight:700}
 
 /* PRODUCT GRID */
 .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;padding:24px;max-width:1400px;margin:0 auto}
@@ -391,6 +396,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(15,25,35,0.
     <button class="tab" onclick="filterTab('Línea Agro')" data-tab="Línea Agro">Línea Agro</button>
     <button class="tab" onclick="filterTab('favs')" data-tab="favs">♥ Favoritos</button>
   </div>
+  <div class="subtabs hidden" id="subtabs"></div>
   <div id="products-container">
     <div class="spinner-wrap"><div class="spinner"></div><span>Cargando productos...</span></div>
   </div>
@@ -487,6 +493,7 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq
 
 let PRODUCTS = [];
 let currentTab = 'todos';
+let currentSubcat = 'todos';
 let searchQuery = '';
 let FAVS = JSON.parse(localStorage.getItem('rae_favs') || '[]');
 let CART = []; // {id, name, code, img, qty}
@@ -534,6 +541,7 @@ async function loadProducts() {
     }).filter(p => p.activo !== 'FALSE' && p.id);
 
     updateCounts();
+    renderSubcats();
     renderProducts();
     renderFeatured();
     document.getElementById('hero-count').textContent = PRODUCTS.length;
@@ -635,6 +643,9 @@ function getFiltered() {
     list = list.filter(p => FAVS.includes(p.id));
   } else if (currentTab !== 'todos') {
     list = list.filter(p => p.categoria === currentTab);
+  }
+  if (currentSubcat !== 'todos') {
+    list = list.filter(p => p.subcategoria && p.subcategoria.toLowerCase() === currentSubcat.toLowerCase());
   }
   if (searchQuery) {
     const q = norm(searchQuery);
@@ -795,11 +806,35 @@ function clearSearch() {
 
 function filterTab(tab) {
   currentTab = tab;
+  currentSubcat = 'todos';
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   const activeTab = document.querySelector(`.tab[data-tab="${tab}"]`);
   if (activeTab) activeTab.classList.add('active');
+  renderSubcats();
   showPage('productos');
   renderProducts();
+}
+
+function filterSubcat(sub) {
+  currentSubcat = sub;
+  document.querySelectorAll('.subtab').forEach(t => t.classList.remove('active'));
+  const activeBtn = document.querySelector(`.subtab[data-sub="${sub}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+  renderProducts();
+}
+
+function renderSubcats() {
+  const el = document.getElementById('subtabs');
+  // Obtener subcategorías del tab actual
+  let source = PRODUCTS;
+  if (currentTab !== 'todos' && currentTab !== 'favs') {
+    source = PRODUCTS.filter(p => p.categoria === currentTab);
+  }
+  const subcats = [...new Set(source.map(p => p.subcategoria).filter(Boolean))].sort();
+  if (subcats.length === 0) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+  el.classList.remove('hidden');
+  el.innerHTML = `<button class="subtab active" data-sub="todos" onclick="filterSubcat('todos')">Todos</button>` +
+    subcats.map(s => `<button class="subtab" data-sub="${s}" onclick="filterSubcat('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
 }
 
 // ═══════════════════════════════════════
