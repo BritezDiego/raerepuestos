@@ -1068,11 +1068,37 @@ function closeModalOnOverlay(e) {
 // ═══════════════════════════════════════
 // PDF GENERATION
 // ═══════════════════════════════════════
-function generatePDF(filtered) {
+async function imgToBase64(url) {
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch { return null; }
+}
+
+async function generatePDF(filtered) {
+  // Show loading state
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generando...'; }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
   const list = filtered ? getFiltered() : PRODUCTS;
   const fileName = filtered ? 'RAE_catalogo_filtrado.pdf' : 'RAE_catalogo_completo.pdf';
+
+  // Pre-load all first images
+  const imgCache = {};
+  await Promise.all(list.map(async p => {
+    if (p.imgs && p.imgs[0]) {
+      imgCache[p.id] = await imgToBase64(p.imgs[0]);
+    }
+  }));
 
   const pageW = 210, pageH = 297;
   const margin = 14;
@@ -1137,40 +1163,66 @@ function generatePDF(filtered) {
     y += 14;
 
     catProds.forEach(prod => {
-      checkPage(18);
+      const rowH = 30;
+      const imgW = 28;
+      const imgH = 26;
+      checkPage(rowH + 2);
 
       // Product rect
       doc.setFillColor(...hexToRgb('#1c2b3a'));
-      doc.roundedRect(margin, y, colW, 14, 2, 2, 'F');
+      doc.roundedRect(margin, y, colW, rowH, 2, 2, 'F');
+
+      // Image area background
+      doc.setFillColor(...hexToRgb('#0f1923'));
+      doc.roundedRect(margin + 2, y + 2, imgW, imgH, 1.5, 1.5, 'F');
+
+      // Product image
+      const b64 = imgCache[prod.id];
+      if (b64) {
+        try {
+          doc.addImage(b64, margin + 2, y + 2, imgW, imgH, undefined, 'FAST');
+        } catch(e) { /* skip if image fails */ }
+      } else {
+        // Placeholder icon
+        doc.setFontSize(14);
+        doc.setTextColor(...hexToRgb('#8a9ab0'));
+        doc.text('📦', margin + 2 + imgW/2, y + 2 + imgH/2 + 2, { align: 'center' });
+      }
+
+      const textX = margin + imgW + 6;
+      const textW = colW - imgW - 8;
 
       // Code badge
       doc.setFillColor(...hexToRgb('#c8a84b'));
-      doc.roundedRect(margin+2, y+2, 30, 10, 1.5, 1.5, 'F');
+      doc.roundedRect(textX, y + 3, 32, 7, 1, 1, 'F');
       doc.setFont('helvetica','bold');
       doc.setFontSize(7);
       doc.setTextColor(...hexToRgb('#0f1923'));
-      doc.text(prod.id, margin+4, y+8.5);
+      doc.text(prod.id, textX + 2, y + 8);
 
       // Description
-      const desc = prod.descripcion.length > 70 ? prod.descripcion.substring(0,70)+'…' : prod.descripcion;
+      const desc = prod.descripcion.length > 80 ? prod.descripcion.substring(0,80)+'…' : prod.descripcion;
       doc.setFont('helvetica','normal');
-      doc.setFontSize(8);
+      doc.setFontSize(8.5);
       doc.setTextColor(...hexToRgb('#e8e8e8'));
-      doc.text(desc, margin+36, y+6.5);
+      const descLines = doc.splitTextToSize(desc, textW);
+      doc.text(descLines.slice(0,2), textX, y + 17);
 
+      // Subcategory
       if (prod.subcategoria) {
         doc.setFontSize(7);
         doc.setTextColor(...hexToRgb('#8a9ab0'));
-        doc.text(prod.subcategoria, margin+36, y+11);
+        doc.text(prod.subcategoria.toUpperCase(), textX, y + 25);
       }
 
-      y += 16;
+      y += rowH + 3;
     });
     y += 4;
   });
 
   addFooter();
   doc.save(fileName);
+  if (btn) { btn.disabled = false; btn.textContent = filtered ? '📄 PDF con filtros' : '📄 PDF Completo'; }
 }
 
 // ═══════════════════════════════════════
